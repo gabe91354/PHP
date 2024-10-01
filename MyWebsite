@@ -1,0 +1,94 @@
+<?php
+session_start(); // Start the session to track logged-in users
+
+// Initialize variables
+$username = "";
+$hashedPassword = "";
+$message = "";
+
+// Check if the user is trying to log in or log out
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    // Handle logout
+    if (isset($_POST['logout'])) {
+        session_destroy(); // End the session to log out the user
+        $username = "";
+        $hashedPassword = "";
+    } else {
+        // Get the username and password from the form
+        $username = htmlspecialchars($_POST["username"]);
+        $password = htmlspecialchars($_POST["password"]);
+
+        // Hash the password (this simulates password hashing for demonstration)
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        // Check if user is already logged in
+        if (isset($_SESSION['username'])) {
+            $message = $_SESSION['username'] . " is already logged in. Wait for them to log out first.";
+        } else {
+            // Set session variables for logged-in user
+            $_SESSION['username'] = $username;
+            $_SESSION['hashedPassword'] = $hashedPassword;
+        }
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+        }
+        input[type="text"], input[type="password"] {
+            margin-bottom: 15px;
+            padding: 10px;
+            font-size: 14px;
+        }
+        button {
+            padding: 10px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .info {
+            margin-top: 20px;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<form action="" method="post">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required value="<?php echo htmlspecialchars($username); ?>">
+    
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+
+    <button type="submit" name="login">Login</button>
+    <button type="submit" name="logout">Logout</button>
+</form>
+
+<div class="info">
+    <?php if (isset($_SESSION['username'])): ?>
+        <h3>User logged in:</h3>
+        <p><?php echo htmlspecialchars($_SESSION['username']); ?></p>
+        <h3>Password:</h3>
+        <p><?php echo htmlspecialchars($_SESSION['hashedPassword']); ?></p>
+    <?php endif; ?>
+    <p class="error"><?php echo $message; ?></p>
+</div>
+
+</body>
+</html>
