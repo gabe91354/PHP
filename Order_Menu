@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Form</title>
+    <style>
+        table {
+            width: 50%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        form {
+            margin-top: 20px;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Order Menu</h2>
+
+<table>
+    <tr>
+        <th>Order</th>
+        <th>Amount</th>
+    </tr>
+    <tr>
+        <td>Ice Cream</td>
+        <td>22 petot</td>
+    </tr>
+    <tr>
+        <td>Water</td>
+        <td>12 petot</td>
+    </tr>
+    <tr>
+        <td>Burger Meal with Fries and Soda</td>
+        <td>50 petot</td>
+    </tr>
+    <tr>
+        <td>Steak Meal and Broccoli</td>
+        <td>87 petot</td>
+    </tr>
+</table>
+
+<form method="POST">
+    <label for="order">Select an order:</label>
+    <select name="order" id="order" required>
+        <option value="22">Ice Cream</option>
+        <option value="12">Water</option>
+        <option value="50">Burger Meal with Fries and Soda</option>
+        <option value="87">Steak Meal and Broccoli</option>
+    </select>
+
+    <br><br>
+
+    <label for="cash">Input Cash:</label>
+    <input type="text" name="cash" id="cash" required pattern="^\d+(\.\d{1,2})?$" title="Please enter a valid amount" />
+
+    <br><br>
+
+    <label for="quantity">Quantity:</label>
+    <input type="number" name="quantity" id="quantity" required min="1" />
+
+    <br><br>
+
+    <button type="submit">Submit</button>
+</form>
+
+<?php
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $orderAmount = $_POST['order'];
+    $cash = floatval($_POST['cash']);
+    $quantity = intval($_POST['quantity']);
+
+    // Calculate total amount
+    $totalAmount = $orderAmount * $quantity;
+
+    // Check if cash is sufficient
+    if ($cash < $totalAmount) {
+        echo "<p class='error'>You do not have enough money. Please enter a valid cash amount.</p>";
+    } else {
+        // Get the current date and time
+        $transactionDateTime = date("Y-m-d H:i:s");
+
+        // Receipt details
+        echo "<h3>Receipt</h3>";
+        echo "<p>Date and Time of Transaction: " . $transactionDateTime . "</p>";
+        echo "<p>Order Amount: " . $totalAmount . " petot</p>";
+        echo "<p>Cash Given: " . $cash . " petot</p>";
+        echo "<p>Change: " . ($cash - $totalAmount) . " petot</p>";
+    }
+}
+?>
+
+</body>
+</html>
